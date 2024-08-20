@@ -1,4 +1,4 @@
-import { NewPatient, Gender } from "./types";
+import { NewPatient, Gender, Entry, EntryType } from "./types";
 
 const isObject = (obj:unknown): obj is object => {
     if (!obj || typeof obj !== 'object'){
@@ -47,9 +47,31 @@ const parseGender = (obj: unknown): Gender => {
     }
 };
 
+const isEntry = (obj:unknown): obj is Entry => {
+    if (isObject(obj) && ('type' in obj) && isString(obj.type) && Object.values(EntryType).map(v => v.toString()).includes(obj.type) ){
+        return true;
+    } else {
+        return false;
+    }
+};
+
+const parseEntries = (obj:unknown): Entry[] => {
+    if (!Array.isArray(obj)){
+        throw new Error("Entries array was not array!" + obj);
+    } 
+    if (obj.length===0){
+        return [];
+    }
+    if (obj.every(isEntry)){
+        return obj;
+    }
+    throw new Error("Could not parse entries" + obj); 
+
+};
+
 
 export const toNewPatient = (obj: unknown): NewPatient => {
-    if (isObject(obj) &&  ('name' in obj && 'dateOfBirth' in obj && 'ssn' in obj && 'gender' in obj && 'occupation' in obj)){
+    if (isObject(obj) &&  ('name' in obj && 'dateOfBirth' in obj && 'ssn' in obj && 'gender' in obj && 'occupation' in obj && 'entries' in obj)){
 
             const newPatient: NewPatient = {
                 name: parseString(obj.name),
@@ -57,7 +79,7 @@ export const toNewPatient = (obj: unknown): NewPatient => {
                 ssn: parseString(obj.ssn),
                 gender: parseGender(obj.gender),
                 occupation: parseString(obj.occupation),
-                entries: [],
+                entries: parseEntries(obj.entries),
             }; 
             return newPatient;
 
