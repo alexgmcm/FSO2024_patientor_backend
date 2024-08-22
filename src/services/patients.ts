@@ -1,6 +1,7 @@
-import patientsData from '../../data/patients-full';
-import { Patient, NonSensitivePatient, NewPatient } from '../types';
+import patientsFile from '../../data/patients-full';
+import { Patient, NonSensitivePatient, NewPatient, Entry} from '../types';
 import { v1 as uuid } from 'uuid';
+let patientsData = patientsFile;
 
 export const getPatients = (): Patient[] => {
     return patientsData;
@@ -33,6 +34,18 @@ export const addPatient = (newPatient: NewPatient): Patient => {
     patientsData.push(patientToAdd);
 
     return patientToAdd;
+};
+
+export const addEntryToPatient = (id: string, entry: Entry): Patient => {
+const patient = getPatientById(id);
+const newEntryId = uuid();
+const newEntryWithId = {...entry, id: newEntryId};
+const oldEntries = patient.entries;
+const newEntries = oldEntries.concat(newEntryWithId);
+const otherPatients = patientsData.filter(x => x.id!=id);
+patient.entries = newEntries;
+patientsData = [...otherPatients, patient];
+return patient;
 };
 
 

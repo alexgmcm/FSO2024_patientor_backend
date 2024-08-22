@@ -1,4 +1,6 @@
-import { NewPatient, Gender, Entry, EntryType } from "./types";
+import  { NewPatient, Gender, Entry, EntryType, HealthCheckEntry,
+     HospitalEntry, OccupationalHealthcareEntry, HealthCheckRating ,
+    HospitalDischarge} from "./types";
 
 const isObject = (obj:unknown): obj is object => {
     if (!obj || typeof obj !== 'object'){
@@ -53,6 +55,68 @@ const isEntry = (obj:unknown): obj is Entry => {
     } else {
         return false;
     }
+};
+
+const isHealthCheckEntry = (entry: Entry): entry is HealthCheckEntry => {
+if (entry.type===EntryType.HealthCheck  && 'healthCheckRating' in entry
+     && Object.values(HealthCheckRating).map(v => v.toString()).includes(String(entry.healthCheckRating))){
+        return true;
+     } 
+        return false;
+     
+
+};
+
+const isHospitalDischarge = (obj: unknown): obj is HospitalDischarge => {
+    if (isObject(obj) 
+        && "date" in obj && isString(obj.date) && isDate(obj.date)
+        && "criteria" in obj && isString(obj.criteria) ){
+            return true;
+        }
+        return false;
+
+};
+
+const isHospitalEntry = (entry: Entry): entry is HospitalEntry => {
+    if (entry.type===EntryType.Hospital  && 'discharge' in entry && isHospitalDischarge(entry.discharge)
+        ){
+           return true;
+        } else {
+           return false;
+        }
+
+};
+
+const isOccupationalHealthcareEntry = (entry:Entry) : entry is OccupationalHealthcareEntry => {
+    if (entry.type===EntryType.OccupationalHealthcare  
+        && 'employerName' in entry && isString(entry.employerName)
+    ){
+       return true;
+    } else {
+       return false;
+    }
+
+};
+
+
+
+export const toEntryType = (entry: unknown): HealthCheckEntry | HospitalEntry | OccupationalHealthcareEntry => {
+if (!isObject(entry) || !isEntry(entry)){
+    throw new Error("Entry was not valid!" + entry);
+}
+
+if (isHealthCheckEntry(entry)){
+    return entry;
+}
+if (isHospitalEntry(entry)){
+    return entry;
+}
+if (isOccupationalHealthcareEntry(entry)){
+    return entry;
+}
+
+throw new Error("Could not match entry to entryType!" + entry);
+
 };
 
 const parseEntries = (obj:unknown): Entry[] => {

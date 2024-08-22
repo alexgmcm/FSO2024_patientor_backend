@@ -1,8 +1,9 @@
 
 import express from 'express';
-import {getNonSensitivePatients, addPatient, getPatientById} from '../services/patients';
+import {getNonSensitivePatients, addPatient, getPatientById, addEntryToPatient} from '../services/patients';
 import { NewPatient, Patient } from '../types';
-import { toNewPatient } from '../utils';
+import { toNewPatient, toEntryType } from '../utils';
+
 
 const router = express.Router();
 
@@ -20,6 +21,19 @@ router.get('/:id', (req, res) => {
     }
 
 
+
+});
+
+router.post('/:id/entries', (req,res) => {
+try {
+   const entry = toEntryType(req.body);
+   const changedPatient = addEntryToPatient(req.params.id, entry);
+   res.statusCode=200;
+   res.json(JSON.stringify(changedPatient));
+} catch (err) {
+    res.statusCode = 400;
+    res.send("Could not add entry to patient" + JSON.stringify(err));
+} 
 
 });
 
