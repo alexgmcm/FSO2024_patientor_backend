@@ -29,7 +29,7 @@ try {
    const entry = toEntryType(req.body);
    const changedPatient = addEntryToPatient(req.params.id, entry);
    res.statusCode=200;
-   res.json(JSON.stringify(changedPatient));
+   res.send(JSON.stringify(changedPatient));
 } catch (error) {
 let errorMessage = "Unknown error";
   if (error instanceof Error) {
@@ -45,7 +45,7 @@ let errorMessage = "Unknown error";
 router.post('/', (req,res) => {
     const newPatient: NewPatient = toNewPatient(req.body);
     const addedPatient: Patient = addPatient(newPatient);
-    res.json(addedPatient);
+    res.send(JSON.stringify(addedPatient));
 
 });
 
