@@ -62,7 +62,7 @@ if (entry.type===EntryType.HealthCheck  && 'healthCheckRating' in entry
      && Object.values(HealthCheckRating).map(v => v.toString()).includes(String(entry.healthCheckRating))){
         return true;
      } 
-        return false;
+     throw new Error ("Missing or wrong type of fields for Health Check Entry: " + JSON.stringify(entry));
      
 
 };
@@ -82,7 +82,7 @@ const isHospitalEntry = (entry: Entry): entry is HospitalEntry => {
         ){
            return true;
         } else {
-           return false;
+            throw new Error ("Missing or wrong type of fields for Hospital Entry: " + JSON.stringify(entry));
         }
 
 };
@@ -93,7 +93,7 @@ const isOccupationalHealthcareEntry = (entry:Entry) : entry is OccupationalHealt
     ){
        return true;
     } else {
-       return false;
+       throw new Error ("Missing or wrong type of fields for OccupationalHealthCare Entry: " + JSON.stringify(entry));
     }
 
 };
@@ -102,20 +102,20 @@ const isOccupationalHealthcareEntry = (entry:Entry) : entry is OccupationalHealt
 
 export const toEntryType = (entry: unknown): HealthCheckEntry | HospitalEntry | OccupationalHealthcareEntry => {
 if (!isObject(entry) || !isEntry(entry)){
-    throw new Error("Entry was not valid!" + entry);
+    throw new Error("Entry was not valid! - " + JSON.stringify(entry));
 }
 
-if (isHealthCheckEntry(entry)){
+if (entry.type===EntryType.HealthCheck && isHealthCheckEntry(entry)){
     return entry;
 }
-if (isHospitalEntry(entry)){
+if (entry.type===EntryType.Hospital && isHospitalEntry(entry)){
     return entry;
 }
-if (isOccupationalHealthcareEntry(entry)){
+if (entry.type === EntryType.OccupationalHealthcare && isOccupationalHealthcareEntry(entry)){
     return entry;
 }
 
-throw new Error("Could not match entry to entryType!" + entry);
+throw new Error("Could not match entry to entryType! - " + JSON.stringify(entry));
 
 };
 

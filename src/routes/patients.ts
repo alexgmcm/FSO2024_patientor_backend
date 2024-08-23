@@ -30,9 +30,14 @@ try {
    const changedPatient = addEntryToPatient(req.params.id, entry);
    res.statusCode=200;
    res.json(JSON.stringify(changedPatient));
-} catch (err) {
+} catch (error) {
+let errorMessage = "Unknown error";
+  if (error instanceof Error) {
+    errorMessage = error.message;
+  }
+  console.log(errorMessage);
     res.statusCode = 400;
-    res.send("Could not add entry to patient" + JSON.stringify(err));
+    res.send("Error: " + errorMessage);
 } 
 
 });
